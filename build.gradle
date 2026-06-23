@@ -1,0 +1,121 @@
+plugins {
+	id 'fabric-loom' version '1.10-SNAPSHOT'
+	id 'maven-publish'
+	id 'com.github.johnrengelman.shadow' version '8.1.1'
+	id 'io.freefair.lombok' version '8.13'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+	archivesName = project.archives_base_name
+}
+
+repositories {
+	maven { url = uri('https://mcef-download.cinemamod.com/repositories/releases') }
+	maven { url = uri('https://maven.wispforest.io/releases/') }
+	maven { url = uri('https://api.modrinth.com/maven') }
+}
+
+configurations {
+	shade
+}
+
+dependencies {
+	minecraft "net.minecraft:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	implementation("com.google.guava:guava:33.4.5-jre")
+	implementation("org.reflections:reflections:0.10.2")
+	implementation("com.google.code.gson:gson:2.12.1")
+	implementation("se.michaelthelin.spotify:spotify-web-api-java:9.1.1")
+
+	shade("com.google.guava:guava:33.4.5-jre")
+	shade("org.reflections:reflections:0.10.2")
+	shade("com.google.code.gson:gson:2.12.1")
+	shade("se.michaelthelin.spotify:spotify-web-api-java:9.1.1")
+}
+
+shadowJar {
+	archiveClassifier.set("all")
+	configurations = [project.configurations.shade]
+
+
+	relocate 'com.google.common', 'your.modid.shadow.guava'
+	relocate 'org.reflections', 'your.modid.shadow.reflections'
+	relocate 'com.google.gson', 'your.modid.shadow.gson'
+	relocate 'se.michaelthelin.spotify', 'your.modid.shadow.spotify'
+}
+
+remapJar {
+	dependsOn shadowJar
+	input.set(shadowJar.archiveFile)
+	archiveClassifier.set("")
+}
+
+jar {
+	enabled = false
+	inputs.property "archivesName", project.base.archivesName
+
+	from("LICENSE") {
+		rename { "${it}_${inputs.properties.archivesName}" }
+	}
+}
+
+processResources {
+	inputs.property "version", project.version
+	filesMatching("fabric.mod.json") {
+		expand "version": inputs.properties.version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 17
+}
+
+tasks.register("renderDoc", Exec) {
+	def javaExecTask = tasks.getByName("runClient")
+	def javaHome = javaExecTask.javaLauncher.get().metadata.installationPath.asFile.absolutePath
+
+	commandLine = [
+			"C:\\Program Files\\RenderDoc\\renderdoccmd.exe",
+			"capture",
+			"--opt-hook-children",
+			"--wait-for-exit",
+			"--working-dir", file(".").absolutePath,
+			"$javaHome/bin/java.exe",
+			"-Xmx512m",
+			"-Xms256m",
+			"-Dsodium.checks.issue2561=false",
+			"-Dorg.gradle.appname=gradlew",
+			"-Dorg.gradle.java.home=$javaHome",
+			"-classpath", "gradle/wrapper/gradle-wrapper.jar",
+			"org.gradle.wrapper.GradleWrapperMain",
+			"runClient"
+	]
+}
+
+loom {
+	accessWidenerPath = file("src/main/resources/client.accesswidener")
+}
+
+java {
+	withSourcesJar()
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+publishing {
+	publications {
+		create("mavenJava", MavenPublication) {
+			artifactId = project.archives_base_name
+			from components.java
+		}
+	}
+	repositories {
+
+	}
+}

@@ -1,0 +1,37 @@
+accessWidener v2 named
+accessible field net/minecraft/client/gl/Framebuffer depthAttachment I
+
+accessible field net/minecraft/client/network/ClientPlayerEntity lastX D
+accessible field net/minecraft/client/network/ClientPlayerEntity lastBaseY D
+accessible field net/minecraft/client/network/ClientPlayerEntity lastZ D
+accessible field net/minecraft/client/network/ClientPlayerEntity lastYaw F
+accessible field net/minecraft/client/network/ClientPlayerEntity lastPitch F
+accessible field net/minecraft/client/network/ClientPlayerEntity ticksSinceLastPositionPacketSent I
+accessible field net/minecraft/client/network/ClientPlayerEntity lastOnGround Z
+
+accessible field net/minecraft/network/packet/c2s/play/PlayerMoveC2SPacket yaw F
+accessible field net/minecraft/network/packet/c2s/play/PlayerMoveC2SPacket pitch F
+accessible method net/minecraft/client/input/KeyboardInput getMovementMultiplier (ZZ)F
+
+accessible field net/minecraft/entity/Entity submergedFluidTag Ljava/util/Set;
+accessible field net/minecraft/entity/Entity fluidHeight Lit/unimi/dsi/fastutil/objects/Object2DoubleMap;
+accessible field net/minecraft/entity/LivingEntity jumping Z
+accessible field net/minecraft/entity/LivingEntity jumpingCooldown I
+
+accessible method net/minecraft/entity/Entity movementInputToVelocity (Lnet/minecraft/util/math/Vec3d;FF)Lnet/minecraft/util/math/Vec3d;
+accessible field net/minecraft/entity/Entity dimensions Lnet/minecraft/entity/EntityDimensions;
+
+accessible method net/minecraft/entity/Entity getVelocityAffectingPos ()Lnet/minecraft/util/math/BlockPos;
+accessible field net/minecraft/entity/Entity yaw F
+accessible field net/minecraft/entity/Entity pitch F
+accessible field net/minecraft/network/packet/c2s/play/PlayerMoveC2SPacket changeLook Z
+accessible field net/minecraft/entity/LimbAnimator pos F
+accessible field net/minecraft/entity/Entity pos Lnet/minecraft/util/math/Vec3d;
+accessible field net/minecraft/entity/TrackedPosition pos Lnet/minecraft/util/math/Vec3d;
+
+mutable field net/minecraft/util/math/Vec3d x D
+mutable field net/minecraft/util/math/Vec3d y D
+mutable field net/minecraft/util/math/Vec3d z D
+
+accessible field net/minecraft/client/gui/screen/ingame/HandledScreen backgroundWidth I
+accessible field net/minecraft/client/gui/screen/ingame/HandledScreen backgroundHeight I

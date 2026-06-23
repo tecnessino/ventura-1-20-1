@@ -1,0 +1,40 @@
+{
+  "required": true,
+  "package": "lol.ventura.fabric.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "MixinBlockCollisionSpliterator",
+    "MixinChatScreen",
+    "MixinClientConnection",
+    "MixinClientPlayerEntity",
+    "MixinClientPlayerInteractionManager",
+    "MixinClientPlayNetworkHandler",
+    "MixinEntity",
+    "MixinGameRenderer",
+    "MixinHandledScreen",
+    "MixinHeldItemRenderer",
+    "MixinInput",
+    "MixinItem",
+    "MixinKeyboard",
+    "MixinKeyboardInput",
+    "MixinLivingEntity",
+    "MixinLivingEntityRenderer",
+    "MixinMinecraftClient",
+    "MixinMouse",
+    "MixinPlayerEntity",
+    "MixinScreen"
+  ],
+  "injectors": {
+    "defaultRequire": 1,
+    "maxShiftBy": 5
+  },
+  "client": [
+    "MixinChatHud",
+    "MixinDrawer",
+    "MixinEntityRenderer",
+    "MixinInGameHud",
+    "MixinSplashOverlay",
+    "MixinWindow",
+    "MixinWorldRenderer"
+  ]
+}

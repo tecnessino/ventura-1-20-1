@@ -1,0 +1,89 @@
+package lol.ventura.features.shaders;
+
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import lol.ventura.misc.render.shaders.Shader;
+import net.minecraft.client.render.*;
+import org.joml.Vector2f;
+import org.lwjgl.opengl.GL20;
+
+import java.awt.*;
+
+public class RoundedOutlineShader extends Shader {
+    public RoundedOutlineShader()
+    {
+        addProgram(Program.create(GL20.GL_VERTEX_SHADER).setSource("""
+                #version 150
+                in vec3 in_Position;
+                in vec2 in_TexCoord;
+                
+                 uniform mat4 model;
+                 uniform mat4 projection;
+                
+                 out vec2 texCoord;
+                
+                 void main() {
+                     gl_Position = projection * model * vec4(in_Position, 1.0);
+                     texCoord = in_TexCoord;
+                 }
+                """).compile());
+        addProgram(Program.create(GL20.GL_FRAGMENT_SHADER).setSource("#version 150\n" +
+                "in vec2 texCoord;\n" +
+                "uniform vec2 size;\n" +
+                "uniform vec4 color;\n" +
+                "uniform float thickness;\n" +
+                "uniform float radius;\n" +
+                "\n" +
+                "float calc(vec2 p, vec2 b, float r) {\n" +
+                "   return length(max(abs(p) - b, 0.0)) - r;\n" +
+                "}\n" +
+                "\n" +
+                "out vec4 FragColor;\n" +
+                "\n" +
+                "void main() {\n" +
+                "vec2 pixel = texCoord * size;\n" +
+                "vec2 centre = 0.5 * size;\n" +
+                "float d = calc(centre - pixel, centre - radius - thickness, radius);\n" +
+                "float sa = smoothstep(0.0, 1, abs(d) / thickness);\n" +
+                "vec4 c = mix(vec4(color.rgb, 1), vec4(color.rgb, 0), sa);\n" +
+                "FragColor = vec4(c.rgb, color.a * c.a);\n" +
+                "}").compile());
+        link();
+
+        size = getUniform("size");
+        radius = getUniform("radius");
+        color = getUniform("color");
+        thickness = getUniform("thickness");
+    }
+
+    private UniformAccessor size,radius,color, thickness;
+
+    public void drawRect(float x, float y, float width, float height, float r, Color c, float thickness)
+    {
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+
+        GlStateManager._glUseProgram(getHandle());
+
+        bindMatrices();
+        radius.setFloat(r);
+        size.setFloat2(new Vector2f(width,height));
+        color.setColor(c);
+        this.thickness.setFloat(thickness);
+
+
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+
+        bufferBuilder.vertex( x, y + height, 0.0F).texture(0, 1).next();
+        bufferBuilder.vertex( x + width, y + height, 0.0F).texture(1, 1).next();
+        bufferBuilder.vertex( x + width, y, 0.0F).texture(1, 0).next();
+        bufferBuilder.vertex( x, y, 0.0F).texture(0, 0).next();
+
+        BufferRenderer.draw(bufferBuilder.end());
+
+        GlStateManager._glUseProgram(0);
+
+        RenderSystem.disableBlend();
+    }
+}
